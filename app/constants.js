@@ -1,4 +1,4 @@
-export const WORKER_MAX_TRIES = 200000;
+export const DEFAULT_MAX_TRIES = 200000;
 
 export const COPY_TIMEOUT = 1200;
 

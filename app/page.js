@@ -3,14 +3,15 @@ import { useState, useRef } from "react";
 import { PatternInputs } from "./components/PatternInputs";
 import { ResultDisplay } from "./components/ResultDisplay";
 import { Footer } from "./components/Footer";
-import { WORKER_MAX_TRIES } from "./constants";
+import { DEFAULT_MAX_TRIES } from "./constants";
 import { useCopyToClipboard } from "./hooks/useCopyToClipboard";
 
 export default function Home() {
   const [patterns, setPatterns] = useState({
     start: "",
     end: "",
-    contain: ""
+    contain: "",
+    maxTries: DEFAULT_MAX_TRIES
   });
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -29,7 +30,7 @@ export default function Home() {
       startPattern: patterns.start,
       endPattern: patterns.end,
       containPattern: patterns.contain,
-      maxTry: WORKER_MAX_TRIES,
+      maxTry: patterns.maxTries || DEFAULT_MAX_TRIES,
     });
 
     worker.onmessage = (e) => {
@@ -45,9 +46,9 @@ export default function Home() {
       } else if (e.data.tries) {
         setTries(e.data.tries);
       }
-      if (e.data.found === false && e.data.tries >= WORKER_MAX_TRIES) {
+      if (e.data.found === false && e.data.tries >= (patterns.maxTries || DEFAULT_MAX_TRIES)) {
         setResult({ 
-          error: `No result after ${WORKER_MAX_TRIES.toLocaleString()} tries. Please try a shorter pattern!` 
+          error: `No result after ${(patterns.maxTries || DEFAULT_MAX_TRIES).toLocaleString()} tries. Please try a shorter pattern!` 
         });
         setLoading(false);
         worker.terminate();
